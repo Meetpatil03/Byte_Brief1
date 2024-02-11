@@ -93,6 +93,9 @@ class _HomePageState extends State<HomePage> {
                   ),
                   child: TextFormField(
                     onFieldSubmitted: (query) {
+                      if (query.isEmpty) {
+                        return;
+                      }
                       Navigator.push(
                         context,
                         MaterialPageRoute(

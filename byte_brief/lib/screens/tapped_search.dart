@@ -2,40 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:url_launcher/url_launcher.dart';
+
 class TappedSearch extends StatefulWidget {
   final String querySearched;
   final String imageUrl;
-  final String des;
+  final String fullContent;
   final String category;
-  final int pageNum;
-  final String text;
+
+  final String url;
   const TappedSearch(
       {super.key,
       required this.querySearched,
       required this.imageUrl,
-      required this.des,
+      required this.fullContent,
       required this.category,
-      required this.pageNum,
-      required this.text});
+      required this.url});
 
   @override
   State<TappedSearch> createState() => _TappedSearchState();
 }
 
 Map<String, dynamic> data = {};
-List<dynamic> apiData = [];
+String apiSummary = "";
+bool isLoading = true;
 
 class _TappedSearchState extends State<TappedSearch> {
   Future<void> fetchPost() async {
     try {
-      final uri = Uri.parse('http://10.0.2.2:5000/search');
-      final Map<String, dynamic> body = {"query": widget.text};
+      final uri = Uri.parse('http://10.0.2.2:5000/summary');
+      final Map<String, dynamic> body = {"bigText": widget.fullContent};
 
       final response = await http.post(
         uri,
         headers: {
           'Content-Type': 'application/json',
-          'Connection': 'Keep-Alive'
+
           // Set Content-Type header
         },
         body: json.encode(body), // Encode the body as JSON
@@ -44,11 +46,11 @@ class _TappedSearchState extends State<TappedSearch> {
       if (response.statusCode == 200) {
         setState(() {
           data = json.decode(response.body);
-          apiData = data['output'];
+          apiSummary = data['output'];
+          isLoading = false;
         });
       }
-
-      print(apiData);
+      print(data['output']);
     } catch (e) {
       print(e);
     }
@@ -97,24 +99,40 @@ class _TappedSearchState extends State<TappedSearch> {
               SizedBox(
                 height: size.height * 0.04,
               ),
-              Container(
-                width: double.infinity,
-                height: 200,
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  widget.des,
-                  style: const TextStyle(fontSize: 24),
-                ),
-              ),
+              isLoading
+                  ? const CircularProgressIndicator()
+                  : Container(
+                      width: double.infinity,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        data['output'],
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ),
             ],
           ),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        child: Row(children: []),
+        elevation: 0,
+        child: Row(
+          children: [
+            TextButton(
+              onPressed: () {
+                Uri apiUrl = Uri.parse(widget.url.toString());
+                launchUrl(apiUrl);
+              },
+              child: const Text(
+                'http://Get-Me-More-Info',
+                style: TextStyle(fontSize: 18, color: Colors.blue),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

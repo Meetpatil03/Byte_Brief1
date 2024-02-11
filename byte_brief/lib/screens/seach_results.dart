@@ -24,7 +24,7 @@ class _SearchScreenState extends State<SearchScreen> {
         uri,
         headers: {
           'Content-Type': 'application/json',
-          'Connection': 'Keep-Alive'
+
           // Set Content-Type header
         },
         body: json.encode(body), // Encode the body as JSON
@@ -124,10 +124,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                 builder: (context) => TappedSearch(
                                   querySearched: apiData[index]['title'],
                                   imageUrl: apiData[index]['url_to_image'],
-                                  des: apiData[index]['description'],
+                                  fullContent: apiData[index]['full_content'],
                                   category: apiData[index]['category'],
-                                  pageNum: index,
-                                  text: widget.text,
+                                  url: apiData[index]['url'],
                                 ),
                               ),
                             );
