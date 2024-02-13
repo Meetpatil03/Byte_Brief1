@@ -15,12 +15,13 @@ Map<String, dynamic> data = {};
 List<dynamic> apiData = [];
 bool isLoading = true;
 int count = 0;
+http.Client client = http.Client();
 
 class _NewsPageState extends State<NewsPage> {
   Future<void> fetchPost() async {
     try {
       final uri = Uri.parse('http://10.0.2.2:5000/all');
-      final response = await http.get(
+      final response = await client.get(
         uri,
         // body: ({"query": "sport"}),
         // headers: {'Content-Type': 'application/json'},
@@ -44,6 +45,12 @@ class _NewsPageState extends State<NewsPage> {
   void initState() {
     super.initState();
     fetchPost();
+  }
+
+  @override
+  void dispose() {
+    client.close();
+    super.dispose();
   }
 
   @override
@@ -73,11 +80,11 @@ class _NewsPageState extends State<NewsPage> {
                       alignment: Alignment.topLeft,
                       child: Text(
                         apiData[count]['title'].toString(),
-                        style: const TextStyle(fontSize: 35),
+                        style: const TextStyle(fontSize: 25),
                       ),
                     ),
                     SizedBox(
-                      height: size.height * 0.08,
+                      height: size.height * 0.02,
                     ),
                     Container(
                       width: double.infinity,
@@ -91,9 +98,9 @@ class _NewsPageState extends State<NewsPage> {
                         child: Image.network(apiData[count]['url_to_image']),
                       ),
                     ),
-                    SizedBox(
-                      height: size.height * 0.04,
-                    ),
+                    // SizedBox(
+                    //   height: size.height * 0.008,
+                    // ),
                     Container(
                       width: double.infinity,
                       height: 200,
@@ -104,7 +111,7 @@ class _NewsPageState extends State<NewsPage> {
                       child: Center(
                         child: Text(
                           apiData[count]['description'].toString(),
-                          style: TextStyle(fontSize: 24),
+                          style: TextStyle(fontSize: 20),
                         ),
                       ),
                     ),

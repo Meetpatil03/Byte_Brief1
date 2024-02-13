@@ -26,6 +26,7 @@ class TappedSearch extends StatefulWidget {
 Map<String, dynamic> data = {};
 String apiSummary = "";
 bool isLoading = true;
+http.Client client = http.Client();
 
 class _TappedSearchState extends State<TappedSearch> {
   Future<void> fetchPost() async {
@@ -33,7 +34,7 @@ class _TappedSearchState extends State<TappedSearch> {
       final uri = Uri.parse('http://10.0.2.2:5000/summary');
       final Map<String, dynamic> body = {"bigText": widget.fullContent};
 
-      final response = await http.post(
+      final response = await client.post(
         uri,
         headers: {
           'Content-Type': 'application/json',
@@ -63,6 +64,12 @@ class _TappedSearchState extends State<TappedSearch> {
   }
 
   @override
+  void dispose() {
+    client.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
@@ -80,11 +87,12 @@ class _TappedSearchState extends State<TappedSearch> {
                 alignment: Alignment.topLeft,
                 child: Text(
                   widget.querySearched,
-                  style: const TextStyle(fontSize: 35),
+                  style: const TextStyle(
+                      fontSize: 25, fontWeight: FontWeight.bold),
                 ),
               ),
               SizedBox(
-                height: size.height * 0.08,
+                height: size.height * 0.02,
               ),
               Container(
                 width: double.infinity,
@@ -103,7 +111,6 @@ class _TappedSearchState extends State<TappedSearch> {
                   ? const CircularProgressIndicator()
                   : Container(
                       width: double.infinity,
-                      height: 200,
                       decoration: BoxDecoration(
                         color: Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
